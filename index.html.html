@@ -2004,6 +2004,9 @@ function askBongAuto(instruction) {
   if (scroll) scroll.scrollTop = scroll.scrollHeight;
 
   var systemText = BONG_SYSTEM + "\n\nHiện tại đang nói chuyện với: " + name + ".";
+  if (name === "Bủm") {
+    systemText += "\n\nLƯU Ý QUAN TRỌNG: Hôm nay Bủm tới mùa dâu. Hãy quan tâm sức khỏe tinh thần và thể chất, đưa lời dặn dò nhẹ nhàng. Dùng từ 'tới mùa dâu' thay vì nói thẳng.";
+  }
 
   fetch(GEMINI_URL, {
     method: "POST",
@@ -2088,6 +2091,9 @@ function sendToBong() {
   }
 
   var systemText = BONG_SYSTEM + "\n\nHiện tại đang nói chuyện với: " + name + ".";
+  if (name === "Bủm") {
+    systemText += "\n\nLƯU Ý QUAN TRỌNG: Hôm nay Bủm tới mùa dâu. Hãy quan tâm sức khỏe tinh thần và thể chất, đưa lời dặn dò nhẹ nhàng. Dùng từ 'tới mùa dâu' thay vì nói thẳng.";
+  }
   // Bống nhớ cả hai bên
   systemText += "\nBống có thể nhớ và nói về những gì Huy và Bủm đã từng nói với Bống. Khi được hỏi, hãy kể lại trung thực dựa trên lịch sử.";
   // Thêm gợi ý thời gian thực để Bống hỏi thăm đúng lúc
@@ -2352,6 +2358,9 @@ function showBongGreeting(context) {
     (avoid ? " KHÔNG được viết giống các câu sau: " + avoid + "." : "") +
     " Viết đúng chính tả tiếng Việt, không sai lỗi, không dùng ký tự lạ. Không giải thích thêm.";
   var systemText = BONG_SYSTEM + "\n\nHiện tại đang nói chuyện với: " + name + ".";
+  if (name === "Bủm") {
+    systemText += "\n\nLƯU Ý QUAN TRỌNG: Hôm nay Bủm tới mùa dâu. Hãy quan tâm sức khỏe tinh thần và thể chất, đưa lời dặn dò nhẹ nhàng. Dùng từ 'tới mùa dâu' thay vì nói thẳng.";
+  }
 
   fetch(GEMINI_URL, {
     method: "POST",
