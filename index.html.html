@@ -1401,6 +1401,12 @@
     line-height: 1.6;
   }
 
+
+  #boothGallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #boothGallery .booth-loading { grid-column: 1 / -1; margin: 0 0 8px; font-family: Georgia, serif; font-style: italic; color: #666; }
+  .booth-shot { display: block; padding: 0; border: 0; background: #111; cursor: pointer; border-radius: 2px; overflow: hidden; }
+  .booth-shot img { width: 100%; height: auto; display: block; }
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
@@ -1593,21 +1599,163 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script>
-function goToPhotobooth() {
+function photoboothExhibit() {
+  var headings = document.querySelectorAll("h2");
+  for (var i = 0; i < headings.length; i++) {
+    var label = (headings[i].textContent || "").replace(/\s+/g, " ").trim().toUpperCase();
+    if (label === "PHOTOBOOTH") return headings[i].closest(".whats-exhibit");
+  }
+  return null;
+}
+function whatsExhibits() {
+  var page = document.getElementById("whatsPage");
+  return page ? page.querySelectorAll(".whats-exhibit") : [];
+}
+function openWhatsExhibit(exhibit) {
+  if (!exhibit) return;
+  var h2 = exhibit.querySelector("h2");
+  var title = (h2 ? h2.textContent : "").replace(/\s+/g, " ").trim();
+  var dateEl = exhibit.querySelector(".exhibit-date");
+  var date = dateEl ? dateEl.textContent.trim() : "";
+  var para = exhibit.querySelector("p");
+  var caption = para ? para.textContent.trim() : "";
   var booth = document.getElementById("boothPage");
   if (!booth) return;
+  if (booth.parentElement !== document.body) document.body.appendChild(booth);
+  closeBoothShot();
+  var crumb = document.getElementById("boothCrumb");
+  if (crumb) crumb.textContent = title;
+  var lightTitle = document.getElementById("boothLightTitle");
+  if (lightTitle) lightTitle.textContent = title.toUpperCase();
+  var dateNode = document.getElementById("boothDate");
+  if (dateNode) dateNode.textContent = date;
+  var cap = document.getElementById("boothCaption");
+  if (cap) cap.textContent = caption;
   var gallery = document.getElementById("boothGallery");
-  var img = document.querySelector(".whats-exhibit img");
-  if (img && gallery && !gallery.querySelector("img")) {
-    var newImg = document.createElement("img");
-    newImg.src = img.src;
-    newImg.style.cssText = "width:100%; border-radius:4px;";
-    gallery.appendChild(newImg);
+  if (gallery) {
+    gallery.style.gridTemplateColumns = title.toUpperCase() === "PHOTOBOOTH" ? "1fr 1fr" : "1fr";
+    fillBoothGallery(gallery, exhibit.querySelectorAll("img"));
   }
   booth.style.display = "flex";
   booth.style.opacity = "1";
+  booth.scrollTop = 0;
+}
+function bindWhatsPhotos() {
+  Array.prototype.forEach.call(whatsExhibits(), function (exhibit) {
+    if (exhibit.dataset.photoBound) return;
+    exhibit.dataset.photoBound = "1";
+    exhibit.style.cursor = "pointer";
+    var h2 = exhibit.querySelector("h2");
+    if (h2) {
+      h2.onclick = function (e) {
+        if (e && e.stopPropagation) e.stopPropagation();
+        openWhatsExhibit(exhibit);
+      };
+    }
+    var frame = exhibit.querySelector(".exhibit-frame");
+    if (frame) {
+      frame.style.cursor = "pointer";
+      frame.addEventListener("click", function (e) {
+        e.stopPropagation();
+        openWhatsExhibit(exhibit);
+      });
+    }
+  });
+}
+document.addEventListener("DOMContentLoaded", bindWhatsPhotos);
+
+function closeBoothShot() {
+  var light = document.getElementById("boothLightbox");
+  if (light) light.style.display = "none";
+}
+function openBoothShot(src) {
+  var light = document.getElementById("boothLightbox");
+  var img = document.getElementById("boothLightboxImg");
+  if (!light || !img) return;
+  img.src = src;
+  light.style.display = "flex";
+}
+function addBoothPhoto(gallery, src) {
+  var btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "booth-shot";
+  var im = document.createElement("img");
+  im.src = src;
+  im.alt = "Photobooth";
+  btn.appendChild(im);
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    openBoothShot(src);
+  });
+  gallery.appendChild(btn);
+}
+function fillBoothGallery(gallery, sources) {
+  gallery.innerHTML = "";
+  var note = document.createElement("p");
+  note.className = "booth-loading";
+  note.textContent = "Đang mở các khung hình…";
+  gallery.appendChild(note);
+  var pending = sources.length;
+  if (!pending) {
+    note.textContent = "Chưa có ảnh.";
+    return;
+  }
+  function done() {
+    pending -= 1;
+    if (pending <= 0 && note.parentNode) note.parentNode.removeChild(note);
+  }
+  Array.prototype.forEach.call(sources, function (img) {
+    var image = new Image();
+    image.onload = function () {
+      var ratio = image.naturalWidth / image.naturalHeight;
+      // Tờ Photo Objet 2×2 (1500×2234). Ảnh khác thì giữ nguyên, không cắt.
+      var strip = ratio > 0.64 && ratio < 0.71;
+      if (!strip) {
+        addBoothPhoto(gallery, img.src);
+        done();
+        return;
+      }
+      var boxes = [
+        [0.024, 0.0913, 0.464, 0.4382],
+        [0.5113, 0.0913, 0.464, 0.4382],
+        [0.024, 0.5425, 0.464, 0.4387],
+        [0.5113, 0.5425, 0.464, 0.4387]
+      ];
+      boxes.forEach(function (b) {
+        var sw = Math.round(b[2] * image.naturalWidth);
+        var sh = Math.round(b[3] * image.naturalHeight);
+        var canvas = document.createElement("canvas");
+        canvas.width = sw;
+        canvas.height = sh;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(
+          image,
+          Math.round(b[0] * image.naturalWidth),
+          Math.round(b[1] * image.naturalHeight),
+          sw,
+          sh,
+          0,
+          0,
+          sw,
+          sh
+        );
+        addBoothPhoto(gallery, canvas.toDataURL("image/jpeg", 0.92));
+      });
+      done();
+    };
+    image.onerror = function () {
+      addBoothPhoto(gallery, img.src);
+      done();
+    };
+    image.src = img.src;
+  });
+}
+function goToPhotobooth() {
+  var exhibit = photoboothExhibit();
+  if (exhibit) openWhatsExhibit(exhibit);
 }
 function backFromBooth() {
+  closeBoothShot();
   var booth = document.getElementById("boothPage");
   if (booth) booth.style.display = "none";
 }
@@ -2587,12 +2735,22 @@ function updateStatusLocal() {
   </div>
   <div class="whats-bar">
     <button class="whats-back" onclick="backFromBooth()">‹</button>
-    <span class="whats-crumb">Photobooth</span>
+    <span class="whats-crumb" id="boothCrumb">Photobooth</span>
   </div>
   <div style="background:#fff; padding:20px 16px; flex:1;">
-    <div style="font-family:'Bodoni MT',Georgia,serif; font-size:1.3rem; margin-bottom:16px;">Since 20/09/2026</div>
+    <div id="boothDate" style="font-family:'Bodoni MT',Georgia,serif; font-size:1.3rem; margin-bottom:16px;">Since 20/09/2026</div>
     <div id="boothGallery"></div>
-    <p style="font-family:Georgia,serif; font-style:italic; color:#333; margin-top:16px;">Những khoảnh khắc trong photobooth — nơi cả hai để lại một phần của mình.</p>
+<div id="boothLightbox" style="display:none;position:fixed;inset:0;z-index:2;background:#000;flex-direction:column;">
+  <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;">
+    <button type="button" onclick="closeBoothShot()" style="background:none;border:none;color:#fff;font-size:1.6rem;cursor:pointer;padding:0;">‹</button>
+    <span id="boothLightTitle" style="color:#fff;font-family:Inter,sans-serif;font-size:0.95rem;letter-spacing:0.06em;">PHOTOBOOTH</span>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:8px 16px 28px;min-height:0;">
+    <img id="boothLightboxImg" alt="Photobooth" style="max-width:100%;max-height:100%;object-fit:contain;">
+  </div>
+</div>
+
+    <p id="boothCaption" style="font-family:Georgia,serif; font-style:italic; color:#333; margin-top:16px;">Những khoảnh khắc trong photobooth — nơi cả hai để lại một phần của mình.</p>
   </div>
   <div class="footer">
     <div class="all-love">All my love</div>
