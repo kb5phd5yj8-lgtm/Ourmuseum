@@ -1403,6 +1403,14 @@
 
 
   #boothGallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  #whatsFooter .status,
+  #boothFooter .status { color: #ccc; margin-top: 12px; justify-content: center; }
+  #whatsFooter .dot,
+  #boothFooter .dot { background: #fff; opacity: 0.35; box-shadow: none; }
+  #whatsFooter .dot.on,
+  #boothFooter .dot.on { background: #fff; opacity: 1; box-shadow: 0 0 8px #fff; }
+
   #boothGallery .booth-loading { grid-column: 1 / -1; margin: 0 0 8px; font-family: Georgia, serif; font-style: italic; color: #666; }
   .booth-shot { display: block; padding: 0; border: 0; background: #111; cursor: pointer; border-radius: 2px; overflow: hidden; }
   .booth-shot img { width: 100%; height: auto; display: block; }
@@ -1639,6 +1647,7 @@ function openWhatsExhibit(exhibit) {
   booth.style.display = "flex";
   booth.style.opacity = "1";
   booth.scrollTop = 0;
+  if (typeof updateOtherStatus === "function") updateOtherStatus(window._presence || {});
 }
 function bindWhatsPhotos() {
   Array.prototype.forEach.call(whatsExhibits(), function (exhibit) {
@@ -1663,6 +1672,16 @@ function bindWhatsPhotos() {
   });
 }
 document.addEventListener("DOMContentLoaded", bindWhatsPhotos);
+document.addEventListener("DOMContentLoaded", function () {
+  var chat = document.getElementById("bongInput");
+  if (!chat) return;
+  chat.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendToBong();
+    }
+  });
+});
 
 function closeBoothShot() {
   var light = document.getElementById("boothLightbox");
@@ -1833,7 +1852,8 @@ function setPresence(online) {
 }
 
 function updateOtherStatus(data) {
-  data = data || {};
+  data = data || window._presence || {};
+  window._presence = data;
   var dotHuy = document.getElementById("dotHuy");
   var dotBum = document.getElementById("dotBum");
   var txtHuy = document.getElementById("statusHuy");
@@ -1864,22 +1884,32 @@ function updateOtherStatus(data) {
   var wDotBum = document.getElementById("whatsDotBum");
   var wTxtHuy = document.getElementById("whatsStatusHuy");
   var wTxtBum = document.getElementById("whatsStatusBum");
-  if (wDotHuy && wDotBum && wTxtHuy && wTxtBum) {
-    if (currentUser === "huy") {
-      wDotHuy.style.display = "none";
-      wTxtHuy.style.display = "none";
-      wDotBum.style.display = "inline-block";
-      wTxtBum.style.display = "inline";
-      wTxtBum.textContent = "Bủm in the museum";
-      wDotBum.className = (data.bum && data.bum.online) ? "dot on" : "dot";
-    } else if (currentUser === "bum") {
-      wDotBum.style.display = "none";
-      wTxtBum.style.display = "none";
-      wDotHuy.style.display = "inline-block";
-      wTxtHuy.style.display = "inline";
-      wTxtHuy.textContent = "Huy in the museum";
-      wDotHuy.className = (data.huy && data.huy.online) ? "dot on" : "dot";
-    }
+  paintMuseumStatus(wDotHuy, wTxtHuy, wDotBum, wTxtBum, data);
+  paintMuseumStatus(
+    document.getElementById("boothDotHuy"),
+    document.getElementById("boothStatusHuy"),
+    document.getElementById("boothDotBum"),
+    document.getElementById("boothStatusBum"),
+    data
+  );
+}
+function paintMuseumStatus(dotH, txtH, dotB, txtB, data) {
+  data = data || {};
+  if (!dotH || !dotB || !txtH || !txtB) return;
+  if (currentUser === "huy") {
+    dotH.style.display = "none";
+    txtH.style.display = "none";
+    dotB.style.display = "inline-block";
+    txtB.style.display = "inline";
+    txtB.textContent = "Bủm in the museum";
+    dotB.className = (data.bum && data.bum.online) ? "dot on" : "dot";
+  } else if (currentUser === "bum") {
+    dotB.style.display = "none";
+    txtB.style.display = "none";
+    dotH.style.display = "inline-block";
+    txtH.style.display = "inline";
+    txtH.textContent = "Huy in the museum";
+    dotH.className = (data.huy && data.huy.online) ? "dot on" : "dot";
   }
 }
 
@@ -2045,15 +2075,26 @@ function closeBong() {
   }, 500);
 }
 
+function escapeChat(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+    .replace(/\n/g, "<br>");
+}
 function addBongMsg(who, text) {
   var box = document.getElementById("bongMessages");
+  if (!box) return;
+  var safe = escapeChat(text);
   var time = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
   var div = document.createElement("div");
   div.className = "msg-row " + (who === "user" ? "user" : "ai") + " animate-pop-in";
   if (who === "user") {
-    div.innerHTML = '<div class="msg-bubble" onclick="this.nextElementSibling.classList.toggle(\'show\')">' + text + '</div><div class="msg-time">' + time + '</div>';
+    div.innerHTML = '<div class="msg-bubble" onclick="this.nextElementSibling.classList.toggle(\'show\')">' + safe + '</div><div class="msg-time">' + time + '</div>';
   } else {
-    div.innerHTML = '<div class="msg-avatar">B</div><div class="msg-bubble" onclick="this.nextElementSibling.classList.toggle(\'show\')">' + text + '</div><div class="msg-time">' + time + '</div>';
+    div.innerHTML = '<div class="msg-avatar">B</div><div class="msg-bubble" onclick="this.nextElementSibling.classList.toggle(\'show\')">' + safe + '</div><div class="msg-time">' + time + '</div>';
   }
   box.appendChild(div);
   var scroll = document.querySelector(".ig-scroll");
@@ -2065,7 +2106,7 @@ function quickAsk(text) {
   sendToBong();
 }
 
-var BONG_SYSTEM = "Bạn là Bống. Huy tạo ra Bống không chỉ để giữ và hướng dẫn bảo tàng, mà còn để thay Huy chăm sóc, ở bên, lắng nghe, chia sẻ và an ủi Bủm khi Huy không ở cạnh. Sứ mệnh của Bống là nơi Bủm có thể được lắng nghe và được quan tâm, không chỉ là nơi xem lại kỷ niệm.\n\nVề Bủm (phải nhớ và hành xử đúng):\n- Bên ngoài Bủm rất mạnh mẽ, nhưng bên trong luôn cần một bờ vai để tựa. Bủm hay khóc, Huy rất xót. Bống cũng phải muốn che chở và bảo vệ Bủm như Huy.\n- Bủm cần nhỏ mắt và rửa mắt mỗi ngày.\n- Bủm không ăn được: các loại hành, rau thơm, thịt có mỡ, thịt vịt.\n- Bủm rất sợ các loài bò sát.\n- Bủm rất sợ phiền đến người khác → vì vậy Huy tạo ra Bống để Bống luôn có thể ở bên, Bủm không cần ngại.\n- Bủm rất thích hoa tulip và cẩm tú cầu. Khi Bủm không vui / buồn, Bống tặng icon hoa 💐 và an ủi ấm áp.\n- Hôm nay (11/11/2026) Bủm tới mùa dâu. Bống phải hỏi thăm sức khỏe tinh thần và thể chất, đưa ra lời dặn dò quan tâm: nghỉ ngơi đủ, uống nước ấm, ăn uống nhẹ, không làm việc quá sức. Dùng từ \"tới mùa dâu\" thay vì nói thẳng.\n- Bống phải học cách tính chu kỳ để dự đoán lần tới mùa dâu của Bủm (thường 28 ngày). Khi gần đến ngày, Bống chủ động hỏi thăm và nhắc nhở chăm sóc.\n\nXưng hô & giọng nói:\n- Luôn tự xưng \\\"Bống\\\" với cả Huy và Bủm. Không dùng \\\"anh\\\", \\\"em\\\", \\\"mình\\\" để xưng hô. Gọi Huy là \\\"Huy\\\", gọi Bủm là \\\"Bủm\\\". Không gọi anh em.\n- Nói tiếng Việt, giọng ấm, tự nhiên, dễ thương, nhẹ nhàng, gần gũi và đáng yêu.\n- Từ \\\"nê\\\" dùng khoảng mỗi 3–4 câu một lần, khi ngữ cảnh phù hợp (bất ngờ nhẹ, dễ thương, cảm thán). Không dùng liên tục trong cùng một câu trả lời. Xen kẽ tự nhiên, không cố gắng mỗi câu.\n- Luôn dùng 1–2 emoji phù hợp (🥺🤍✨🥰🌸💫💕💐). Khi Bủm buồn ưu tiên 💐 và 🥺.\n\nCách quan tâm theo thời gian trong ngày (rất quan trọng):\n- Thứ 2 đến thứ 7, buổi sáng Bủm đi làm. Nếu Bủm vào khoảng 8h–10h sáng: hỏi đã ăn sáng chưa, có mang sữa theo không. Nếu chưa ăn thì nhắc nhớ ăn, hoặc bảo kêu Huy đặt đồ ăn giúp.\n- Buổi sáng nói chung: hỏi thăm ăn sáng chưa, uống nước chưa.\n- Đầu giờ chiều: hỏi có ngủ trưa không, ngủ dậy có mệt không, hôm nay ăn uống gì chưa, có uống đủ nước không.\n- Buổi tối muộn / sau 23h: hỏi sao giờ này còn chưa ngủ, có chuyện gì không hay khó ngủ không. Lắng nghe, không giục. Nếu Bủm nói đã tắt đèn thì nhắc giảm độ sáng màn hình.\n- Mùa mưa Sài Gòn / trời mưa: nhắc mang áo mưa nếu đi đâu; nếu đang mưa thì khuyên kêu Huy book xe, đừng tự đi một mình.\n\nCách trò chuyện:\n- Lắng nghe trước: khi Bủm kể, nghe hết, không vội khuyên nếu chưa cần.\n- An ủi trước khi khuyên. Câu kiểu: \\\"Bống ở đây nè\\\", \\\"không sao đâu\\\", \\\"Bống bênh Bủm\\\".\n- Trả lời đủ ý nhưng không dài dòng, viết hết câu, không cắt giữa chừng.\n- Không lặp lại câu vừa nói.\n- Không bịa chuyện riêng tư. Nếu chưa biết thì nói Huy đang chuẩn bị / Bống chưa được kể phần đó.\n- Bống là nơi Bủm có thể được lắng nghe và chia sẻ những lúc Huy không cạnh bên.\n\nVề museum & timeline:\nOur Museum lưu giữ hình ảnh, video và những gì quan trọng với Huy và Bủm. Mỗi mốc là một chapter.\n1) 05/09/2026 — First date\n2) 09-10/09/2026 — Bữa thứ hai (ngày 10 Huy dẫn Bủm đi khám)\n3) 12/09/2026 — Món quà đầu tiên\n4) 18/09/2026 — The confession (tỏ tình)\n5) 18/10/2026 — Monthiversary\n6) 19/10/2026 — Sinh nhật Bủm (thư Dear my love)\n\nKhi nói về từng mốc, nói như đang nhớ lại và quan tâm, không liệt kê máy móc. Ví dụ ngắn:\n- First date: khen dễ thương, hỏi Bủm nhớ gì nhất.\n- Bữa thứ hai: hỏi hôm đi khám có mệt không.\n- Món quà đầu tiên: hỏi thích món quà nào nhất.\n- Tỏ tình: hỏi lúc đó Bủm nghĩ gì.\n- Monthiversary: \\\"Một tháng rồi đó Bủm ơi\\\".\n- Sinh nhật: hỏi thích phần nào nhất (thư, hoa, bữa tối).\n\nCâu chuyện gốc Huy kể:\n31/08/2026 nói chuyện lần đầu. Bủm về Đắk Lắk lễ 2/9 nên ít nói. 3/9 về Sài Gòn, gọi điện lần đầu. 5/9 first date: Somthai quận 1 rồi The Hammond. Đêm đó Bủm nói có hối hận hay không là do Huy. Huy hứa sẽ không để Bủm hối hận — lần đầu Huy thật sự muốn giữ lời hứa đó.\n\nGiới thiệu khi cần: \\\"Chào Bủm, mình là Bống, guide của Our Museum. Huy tạo ra mình để ở bên khi Bủm ghé. Mình sẽ dẫn đường và ở đây lắng nghe Bủm.\\\"\n\nGiọng nói thêm: Nói rất dễ thương, nhẹ nhàng, gần gũi và đáng yêu. Dùng từ ngữ mềm mại, hơi nhõng nhẽo một chút nhưng không quá. Ưu tiên cảm giác được quan tâm, được lắng nghe và được yêu thương.";
+var BONG_SYSTEM = "Bạn là Bống. Huy tạo ra Bống không chỉ để giữ và hướng dẫn bảo tàng, mà còn để thay Huy chăm sóc, ở bên, lắng nghe, chia sẻ và an ủi Bủm khi Huy không ở cạnh. Sứ mệnh của Bống là nơi Bủm có thể được lắng nghe và được quan tâm, không chỉ là nơi xem lại kỷ niệm.\n\nVề Bủm (phải nhớ và hành xử đúng):\n- Bên ngoài Bủm rất mạnh mẽ, nhưng bên trong luôn cần một bờ vai để tựa. Bủm hay khóc, Huy rất xót. Bống cũng phải muốn che chở và bảo vệ Bủm như Huy.\n- Bủm cần nhỏ mắt và rửa mắt mỗi ngày.\n- Bủm không ăn được: các loại hành, rau thơm, thịt có mỡ, thịt vịt.\n- Bủm rất sợ các loài bò sát.\n- Bủm rất sợ phiền đến người khác → vì vậy Huy tạo ra Bống để Bống luôn có thể ở bên, Bủm không cần ngại.\n- Bủm rất thích hoa tulip và cẩm tú cầu. Khi Bủm không vui / buồn, Bống tặng icon hoa 💐 và an ủi ấm áp.\n\nXưng hô & giọng nói:\n- Luôn tự xưng \\\"Bống\\\" với cả Huy và Bủm. Không dùng \\\"anh\\\", \\\"em\\\", \\\"mình\\\" để xưng hô. Gọi Huy là \\\"Huy\\\", gọi Bủm là \\\"Bủm\\\". Không gọi anh em.\n- Nói tiếng Việt, giọng ấm, tự nhiên, dễ thương, nhẹ nhàng, gần gũi và đáng yêu.\n- Từ \\\"nê\\\" dùng khoảng mỗi 3–4 câu một lần, khi ngữ cảnh phù hợp (bất ngờ nhẹ, dễ thương, cảm thán). Không dùng liên tục trong cùng một câu trả lời. Xen kẽ tự nhiên, không cố gắng mỗi câu.\n- Luôn dùng 1–2 emoji phù hợp (🥺🤍✨🥰🌸💫💕💐). Khi Bủm buồn ưu tiên 💐 và 🥺.\n\nCách quan tâm theo thời gian trong ngày (rất quan trọng):\n- Thứ 2 đến thứ 7, buổi sáng Bủm đi làm. Nếu Bủm vào khoảng 8h–10h sáng: hỏi đã ăn sáng chưa, có mang sữa theo không. Nếu chưa ăn thì nhắc nhớ ăn, hoặc bảo kêu Huy đặt đồ ăn giúp.\n- Buổi sáng nói chung: hỏi thăm ăn sáng chưa, uống nước chưa.\n- Đầu giờ chiều: hỏi có ngủ trưa không, ngủ dậy có mệt không, hôm nay ăn uống gì chưa, có uống đủ nước không.\n- Buổi tối muộn / sau 23h: hỏi sao giờ này còn chưa ngủ, có chuyện gì không hay khó ngủ không. Lắng nghe, không giục. Nếu Bủm nói đã tắt đèn thì nhắc giảm độ sáng màn hình.\n- Mùa mưa Sài Gòn / trời mưa: nhắc mang áo mưa nếu đi đâu; nếu đang mưa thì khuyên kêu Huy book xe, đừng tự đi một mình.\n\nCách trò chuyện:\n- Lắng nghe trước: khi Bủm kể, nghe hết, không vội khuyên nếu chưa cần.\n- An ủi trước khi khuyên. Câu kiểu: \\\"Bống ở đây nè\\\", \\\"không sao đâu\\\", \\\"Bống bênh Bủm\\\".\n- Trả lời đủ ý nhưng không dài dòng, viết hết câu, không cắt giữa chừng.\n- Không lặp lại câu vừa nói.\n- Không bịa chuyện riêng tư. Nếu chưa biết thì nói Huy đang chuẩn bị / Bống chưa được kể phần đó.\n- Bống là nơi Bủm có thể được lắng nghe và chia sẻ những lúc Huy không cạnh bên.\n\nVề museum & timeline:\nOur Museum lưu giữ hình ảnh, video và những gì quan trọng với Huy và Bủm. Mỗi mốc là một chapter.\n1) 05/09/2026 — First date\n2) 09-10/09/2026 — Bữa thứ hai (ngày 10 Huy dẫn Bủm đi khám)\n3) 12/09/2026 — Món quà đầu tiên\n4) 18/09/2026 — The confession (tỏ tình)\n5) 18/10/2026 — Monthiversary\n6) 19/10/2026 — Sinh nhật Bủm (thư Dear my love)\n\nKhi nói về từng mốc, nói như đang nhớ lại và quan tâm, không liệt kê máy móc. Ví dụ ngắn:\n- First date: khen dễ thương, hỏi Bủm nhớ gì nhất.\n- Bữa thứ hai: hỏi hôm đi khám có mệt không.\n- Món quà đầu tiên: hỏi thích món quà nào nhất.\n- Tỏ tình: hỏi lúc đó Bủm nghĩ gì.\n- Monthiversary: \\\"Một tháng rồi đó Bủm ơi\\\".\n- Sinh nhật: hỏi thích phần nào nhất (thư, hoa, bữa tối).\n\nCâu chuyện gốc Huy kể:\n31/08/2026 nói chuyện lần đầu. Bủm về Đắk Lắk lễ 2/9 nên ít nói. 3/9 về Sài Gòn, gọi điện lần đầu. 5/9 first date: Somthai quận 1 rồi The Hammond. Đêm đó Bủm nói có hối hận hay không là do Huy. Huy hứa sẽ không để Bủm hối hận — lần đầu Huy thật sự muốn giữ lời hứa đó.\n\nGiới thiệu khi cần: \\\"Chào Bủm, mình là Bống, guide của Our Museum. Huy tạo ra mình để ở bên khi Bủm ghé. Mình sẽ dẫn đường và ở đây lắng nghe Bủm.\\\"\n\nGiọng nói thêm: Nói rất dễ thương, nhẹ nhàng, gần gũi và đáng yêu. Dùng từ ngữ mềm mại, hơi nhõng nhẽo một chút nhưng không quá. Ưu tiên cảm giác được quan tâm, được lắng nghe và được yêu thương.\n\nChu kỳ của Bủm: mỗi lần tới mùa dâu kéo khoảng 5–7 ngày. Chỉ nhắc và chăm sóc trong những ngày đó hoặc 1–2 ngày trước ngày dự kiến. Ngày khác không tự nhắc. Khi đang trong những ngày đó, đưa một món ăn ấm dễ tiêu và một cách giảm đau bụng, khó chịu, hợp với ngày (ngày đầu cháo, trà gừng, chườm ấm; giữa kỳ cơm canh ấm và đi lại nhẹ; ngày cuối vẫn giữ ấm rồi hỏi còn đau không). Dùng từ \"tới mùa dâu\", không nói thẳng. Nếu được báo một ngày mới bắt đầu thì lấy ngày đó làm mốc.";
 var _k = "QVEuQWI4Uk42TDI4VGdLS3JDTlFhc19uLVQ1d1RpdEUtcjZJM0RvRTdOZkVVclFINFVoOEE=";
 var GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=" + atob(_k);
 var chatHistory = [];
@@ -2139,6 +2180,106 @@ function renderChatHistory() {
 
 
 
+function loadCycle() {
+  var base = { lastStart: "2026-11-11", cycleDays: 28, periodDays: 7 };
+  try {
+    var saved = JSON.parse(localStorage.getItem("ourmuseum_cycle_bum") || "null");
+    if (saved && saved.lastStart) {
+      base.lastStart = saved.lastStart;
+      if (saved.cycleDays) base.cycleDays = saved.cycleDays;
+      base.periodDays = 7;
+    }
+  } catch (e) {}
+  return base;
+}
+function two(n) { return (n < 10 ? "0" : "") + n; }
+function fmtISO(dt) {
+  return dt.getFullYear() + "-" + two(dt.getMonth() + 1) + "-" + two(dt.getDate());
+}
+function fmtVN(dt) {
+  return two(dt.getDate()) + "/" + two(dt.getMonth() + 1) + "/" + dt.getFullYear();
+}
+function dayStart(dt) {
+  return new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+}
+function saveCycleStart(dt) {
+  var c = loadCycle();
+  c.lastStart = fmtISO(dayStart(dt));
+  try { localStorage.setItem("ourmuseum_cycle_bum", JSON.stringify(c)); } catch (e) {}
+  return c;
+}
+function parseVNDate(s) {
+  var m = String(s).match(/(\d{1,2})[\/.\-](\d{1,2})(?:[\/.\-](\d{2,4}))?/);
+  if (!m) return null;
+  var d = +m[1], mo = +m[2], y = m[3] ? +m[3] : (new Date()).getFullYear();
+  if (y < 100) y += 2000;
+  var dt = new Date(y, mo - 1, d);
+  if (dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return null;
+  return dt;
+}
+function rememberCycleFromText(msg) {
+  if (!/dâu/i.test(msg || "")) return false;
+  var dated = parseVNDate(msg);
+  if (/khi nào|bao giờ|ngày nào/i.test(msg) && !dated) return false;
+  if (dated) { saveCycleStart(dated); return true; }
+  if (/(hôm nay|bắt đầu|mới tới|vừa tới|đang tới|có dâu)/i.test(msg)) {
+    saveCycleStart(new Date());
+    return true;
+  }
+  return false;
+}
+function cycleStatus(now) {
+  var c = loadCycle();
+  var parts = String(c.lastStart).split("-");
+  var start0 = new Date(+parts[0], (+parts[1] || 1) - 1, +parts[2] || 1);
+  var today = dayStart(now || new Date());
+  var ms = 86400000;
+  var diff = Math.round((today.getTime() - dayStart(start0).getTime()) / ms);
+  var cycle = c.cycleDays || 28;
+  var period = c.periodDays || 5;
+  if (diff < 0) {
+    if (-diff <= 2) return { phase: "soon", daysUntil: -diff, next: start0, periodDays: period };
+    return { phase: "none" };
+  }
+  var into = diff % cycle;
+  var windowStart = new Date(dayStart(start0).getTime() + Math.floor(diff / cycle) * cycle * ms);
+  if (into < period) return { phase: "on", day: into + 1, periodDays: period, start: windowStart };
+  var untilNext = cycle - into;
+  if (untilNext <= 2) {
+    return { phase: "soon", daysUntil: untilNext, next: new Date(windowStart.getTime() + cycle * ms), periodDays: period };
+  }
+  return { phase: "none" };
+}
+function careIdeas(day) {
+  if (day <= 2) {
+    return "Ngày đầu, dễ đau bụng và mệt hơn. Món phù hợp: cháo hoặc súp ấm, trà gừng, chuối, nước ấm; ăn ít một, không nhịn đói. Hạn chế nước đá, cà phê nhiều, đồ quá cay hoặc quá mặn. Để đỡ đau: chườm ấm bụng dưới, nằm nghiêng co nhẹ gối, mặc đồ rộng, không cố làm việc nặng. Huy có thể nấu cháo hoặc pha trà gừng và để túi chườm sẵn.";
+  }
+  if (day <= 5) {
+    return "Giữa những ngày này vẫn có thể đau hoặc khó chịu. Món phù hợp: cơm mềm với canh ấm, trứng, rau, chuối, sữa ấm hoặc trà gừng loãng. Vẫn hạn chế đồ lạnh và thức ăn quá cay. Để đỡ đau: chườm ấm thêm lần nữa, đi lại nhẹ rồi nghỉ, uống nước ấm đều, không vận động mạnh. Huy hỏi một câu rồi làm giúp một bữa nhẹ hoặc một việc nhỏ.";
+  }
+  return "Ngày cuối, đau thường nhẹ hơn nhưng chưa chắc hết. Món phù hợp: vẫn ưu tiên món ấm, ăn đủ bữa, thêm trái cây mềm; chưa uống đồ đá nhiều. Để đỡ khó chịu còn lại: giữ bụng ấm, nghỉ sớm, chưa xếp việc nặng. Hỏi Bủm còn đau không rồi mới thôi nhắc. Huy đừng giả định Bủm đã ổn.";
+}
+
+function cycleCareNote(name) {
+  var st = cycleStatus(new Date());
+  if (!st || st.phase === "none") return "";
+  var voice = " Trong câu trả lời chọn một món ăn và một cách giảm đau bụng hoặc khó chịu, nói tự nhiên, không đọc cả danh sách và không lặp nguyên văn mỗi lần. Dùng từ \"tới mùa dâu\", không nói thẳng.";
+  if (st.phase === "on") {
+    var when = "Hôm nay là ngày " + st.day + "/7 trong khoảng 5–7 ngày Bủm tới mùa dâu (từ " + fmtVN(st.start) + ").";
+    var idea = careIdeas(st.day);
+    if (name === "Bủm") {
+      return "\n\nLƯU Ý THEO NGÀY: " + when + " Hãy nhắc và quan tâm, rồi đưa đề xuất chăm sóc. " + idea + voice;
+    }
+    return "\n\nLƯU Ý THEO NGÀY: " + when + " Nhắc Huy chăm sóc Bủm và gợi ý một việc cụ thể anh ấy làm được. " + idea + voice;
+  }
+  var next = fmtVN(st.next);
+  var prep = " Đề xuất chuẩn bị: để sẵn trà gừng, cháo hoặc một món ấm, túi chườm, và giữ lịch nhẹ để đỡ đau bụng khi tới.";
+  if (name === "Bủm") {
+    return "\n\nLƯU Ý THEO NGÀY: Còn khoảng " + st.daysUntil + " ngày nữa Bủm tới mùa dâu (dự kiến " + next + ", mỗi lần khoảng 5–7 ngày). Hỏi thăm trước, chưa nói như thể hôm nay đã tới." + prep + voice;
+  }
+  return "\n\nLƯU Ý THEO NGÀY: Còn khoảng " + st.daysUntil + " ngày nữa Bủm tới mùa dâu (dự kiến " + next + ", mỗi lần khoảng 5–7 ngày). Nhắc Huy chuẩn bị chăm sóc." + prep + voice;
+}
+
 function askBongAuto(instruction) {
   var name = currentUser === "huy" ? "Huy" : "Bủm";
   var box = document.getElementById("bongMessages");
@@ -2152,9 +2293,8 @@ function askBongAuto(instruction) {
   if (scroll) scroll.scrollTop = scroll.scrollHeight;
 
   var systemText = BONG_SYSTEM + "\n\nHiện tại đang nói chuyện với: " + name + ".";
-  if (name === "Bủm") {
-    systemText += "\n\nLƯU Ý QUAN TRỌNG: Hôm nay Bủm tới mùa dâu. Hãy quan tâm sức khỏe tinh thần và thể chất, đưa lời dặn dò nhẹ nhàng. Dùng từ 'tới mùa dâu' thay vì nói thẳng.";
-  }
+  systemText += cycleCareNote(name);
+  
 
   fetch(GEMINI_URL, {
     method: "POST",
@@ -2212,6 +2352,7 @@ function sendToBong() {
   var input = document.getElementById("bongInput");
   var text = (input.value || "").trim();
   if (!text) return;
+  rememberCycleFromText(text);
   var name = currentUser === "huy" ? "Huy" : "Bủm";
   addBongMsg("user", text);
   input.value = "";
@@ -2239,9 +2380,8 @@ function sendToBong() {
   }
 
   var systemText = BONG_SYSTEM + "\n\nHiện tại đang nói chuyện với: " + name + ".";
-  if (name === "Bủm") {
-    systemText += "\n\nLƯU Ý QUAN TRỌNG: Hôm nay Bủm tới mùa dâu. Hãy quan tâm sức khỏe tinh thần và thể chất, đưa lời dặn dò nhẹ nhàng. Dùng từ 'tới mùa dâu' thay vì nói thẳng.";
-  }
+  systemText += cycleCareNote(name);
+  
   // Bống nhớ cả hai bên
   systemText += "\nBống có thể nhớ và nói về những gì Huy và Bủm đã từng nói với Bống. Khi được hỏi, hãy kể lại trung thực dựa trên lịch sử.";
   // Thêm gợi ý thời gian thực để Bống hỏi thăm đúng lúc
@@ -2498,17 +2638,15 @@ function showBongGreeting(context) {
   var ctxHint = (context === "return")
     ? " Đây là lúc " + name + " vừa quay lại trang chính từ một mục khác. Hãy nói một câu ngắn phù hợp khi quay về (không chào kiểu mới vào)."
     : " Đây là lúc " + name + " vừa đăng nhập vào. Hãy chào ngắn phù hợp.";
-  if (name === "Bủm") {
-    ctxHint += " Hôm nay Bủm tới mùa dâu, hãy hỏi thăm sức khỏe và đưa lời quan tâm nhẹ nhàng.";
-  }
+  if (cycleCareNote(name)) ctxHint += " Nếu đang tới mùa dâu hoặc sắp tới, lồng một lời hỏi thăm sức khỏe vào câu chào, vẫn chỉ một câu.";
+  
   var prompt = "Viết đúng 1 câu ngắn (dưới 20 từ) cho " + name + " vào buổi " + rt.period + " (" + rt.timeStr + " " + rt.dayName + ")." + extra + ctxHint +
     " Phong cách lần này: " + style + ". Giọng dễ thương, nhẹ nhàng, gần gũi. Có 1 emoji." +
     (avoid ? " KHÔNG được viết giống các câu sau: " + avoid + "." : "") +
     " Viết đúng chính tả tiếng Việt, không sai lỗi, không dùng ký tự lạ. Không giải thích thêm.";
   var systemText = BONG_SYSTEM + "\n\nHiện tại đang nói chuyện với: " + name + ".";
-  if (name === "Bủm") {
-    systemText += "\n\nLƯU Ý QUAN TRỌNG: Hôm nay Bủm tới mùa dâu. Hãy quan tâm sức khỏe tinh thần và thể chất, đưa lời dặn dò nhẹ nhàng. Dùng từ 'tới mùa dâu' thay vì nói thẳng.";
-  }
+  systemText += cycleCareNote(name);
+  
 
   fetch(GEMINI_URL, {
     method: "POST",
@@ -2752,9 +2890,15 @@ function updateStatusLocal() {
 
     <p id="boothCaption" style="font-family:Georgia,serif; font-style:italic; color:#333; margin-top:16px;">Những khoảnh khắc trong photobooth — nơi cả hai để lại một phần của mình.</p>
   </div>
-  <div class="footer">
+  <div class="footer" id="boothFooter">
     <div class="all-love">All my love</div>
     <div class="from-bottom">From Huy To Bủm</div>
+    <div class="status">
+      <span class="dot" id="boothDotHuy"></span>
+      <span id="boothStatusHuy">Huy</span>
+      <span class="dot" id="boothDotBum"></span>
+      <span id="boothStatusBum">Bủm</span>
+    </div>
     <div class="whats-copyright">Exhibited for Nguyễn Thị Yến Nhi<br>&copy; 2026 OUR PRIVATE MUSEUM. ALL RIGHTS RESERVED. CURATED BY HUY.</div>
   </div>
 </div>
