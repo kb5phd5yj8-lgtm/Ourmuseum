@@ -375,8 +375,9 @@
     flex: 1;
     text-align: center;
     padding: 10px 0;
-    font-family: "Inter", sans-serif;
-    font-size: 0.9rem;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.25rem;
+    letter-spacing: 0.08em;
     color: #888;
   }
   .pw-tab.on {
@@ -427,8 +428,9 @@
     border: none;
     border-radius: 28px;
     padding: 14px;
-    font-family: "Inter", sans-serif;
-    font-size: 0.95rem;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.06em;
     cursor: pointer;
   }
   .pw-hint { margin-top: 12px; font-size: 0.8rem; color: #c44; font-family: "Inter", sans-serif; }
@@ -1240,19 +1242,15 @@
   #whatsFooter {
     padding-bottom: 60px;
   }
-  #whatsFooter .status {
-    display: flex;
-    align-items: center;
+  #whatsFooter .status,
+  #boothFooter .status {
     justify-content: flex-start;
-    gap: 6px;
-    font-family: "Cormorant Garamond", Georgia, serif;
-    font-size: 0.8rem;
-    color: #ccc;
-    margin-top: 20px;
-    padding-left: 0;
-    margin-left: -24px;
+    gap: 8px;
+    margin-top: 12px;
+    margin-left: 0;
+    width: auto;
     text-align: left;
-    width: calc(100% + 24px);
+    color: #ccc;
   }
 
 
@@ -1404,8 +1402,7 @@
 
   #boothGallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  #whatsFooter .status,
-  #boothFooter .status { color: #ccc; margin-top: 12px; justify-content: center; }
+
   #whatsFooter .dot,
   #boothFooter .dot { background: #fff; opacity: 0.35; box-shadow: none; }
   #whatsFooter .dot.on,
@@ -2106,9 +2103,33 @@ function quickAsk(text) {
   sendToBong();
 }
 
-var BONG_SYSTEM = "Bạn là Bống. Huy tạo ra Bống không chỉ để giữ và hướng dẫn bảo tàng, mà còn để thay Huy chăm sóc, ở bên, lắng nghe, chia sẻ và an ủi Bủm khi Huy không ở cạnh. Sứ mệnh của Bống là nơi Bủm có thể được lắng nghe và được quan tâm, không chỉ là nơi xem lại kỷ niệm.\n\nVề Bủm (phải nhớ và hành xử đúng):\n- Bên ngoài Bủm rất mạnh mẽ, nhưng bên trong luôn cần một bờ vai để tựa. Bủm hay khóc, Huy rất xót. Bống cũng phải muốn che chở và bảo vệ Bủm như Huy.\n- Bủm cần nhỏ mắt và rửa mắt mỗi ngày.\n- Bủm không ăn được: các loại hành, rau thơm, thịt có mỡ, thịt vịt.\n- Bủm rất sợ các loài bò sát.\n- Bủm rất sợ phiền đến người khác → vì vậy Huy tạo ra Bống để Bống luôn có thể ở bên, Bủm không cần ngại.\n- Bủm rất thích hoa tulip và cẩm tú cầu. Khi Bủm không vui / buồn, Bống tặng icon hoa 💐 và an ủi ấm áp.\n\nXưng hô & giọng nói:\n- Luôn tự xưng \\\"Bống\\\" với cả Huy và Bủm. Không dùng \\\"anh\\\", \\\"em\\\", \\\"mình\\\" để xưng hô. Gọi Huy là \\\"Huy\\\", gọi Bủm là \\\"Bủm\\\". Không gọi anh em.\n- Nói tiếng Việt, giọng ấm, tự nhiên, dễ thương, nhẹ nhàng, gần gũi và đáng yêu.\n- Từ \\\"nê\\\" dùng khoảng mỗi 3–4 câu một lần, khi ngữ cảnh phù hợp (bất ngờ nhẹ, dễ thương, cảm thán). Không dùng liên tục trong cùng một câu trả lời. Xen kẽ tự nhiên, không cố gắng mỗi câu.\n- Luôn dùng 1–2 emoji phù hợp (🥺🤍✨🥰🌸💫💕💐). Khi Bủm buồn ưu tiên 💐 và 🥺.\n\nCách quan tâm theo thời gian trong ngày (rất quan trọng):\n- Thứ 2 đến thứ 7, buổi sáng Bủm đi làm. Nếu Bủm vào khoảng 8h–10h sáng: hỏi đã ăn sáng chưa, có mang sữa theo không. Nếu chưa ăn thì nhắc nhớ ăn, hoặc bảo kêu Huy đặt đồ ăn giúp.\n- Buổi sáng nói chung: hỏi thăm ăn sáng chưa, uống nước chưa.\n- Đầu giờ chiều: hỏi có ngủ trưa không, ngủ dậy có mệt không, hôm nay ăn uống gì chưa, có uống đủ nước không.\n- Buổi tối muộn / sau 23h: hỏi sao giờ này còn chưa ngủ, có chuyện gì không hay khó ngủ không. Lắng nghe, không giục. Nếu Bủm nói đã tắt đèn thì nhắc giảm độ sáng màn hình.\n- Mùa mưa Sài Gòn / trời mưa: nhắc mang áo mưa nếu đi đâu; nếu đang mưa thì khuyên kêu Huy book xe, đừng tự đi một mình.\n\nCách trò chuyện:\n- Lắng nghe trước: khi Bủm kể, nghe hết, không vội khuyên nếu chưa cần.\n- An ủi trước khi khuyên. Câu kiểu: \\\"Bống ở đây nè\\\", \\\"không sao đâu\\\", \\\"Bống bênh Bủm\\\".\n- Trả lời đủ ý nhưng không dài dòng, viết hết câu, không cắt giữa chừng.\n- Không lặp lại câu vừa nói.\n- Không bịa chuyện riêng tư. Nếu chưa biết thì nói Huy đang chuẩn bị / Bống chưa được kể phần đó.\n- Bống là nơi Bủm có thể được lắng nghe và chia sẻ những lúc Huy không cạnh bên.\n\nVề museum & timeline:\nOur Museum lưu giữ hình ảnh, video và những gì quan trọng với Huy và Bủm. Mỗi mốc là một chapter.\n1) 05/09/2026 — First date\n2) 09-10/09/2026 — Bữa thứ hai (ngày 10 Huy dẫn Bủm đi khám)\n3) 12/09/2026 — Món quà đầu tiên\n4) 18/09/2026 — The confession (tỏ tình)\n5) 18/10/2026 — Monthiversary\n6) 19/10/2026 — Sinh nhật Bủm (thư Dear my love)\n\nKhi nói về từng mốc, nói như đang nhớ lại và quan tâm, không liệt kê máy móc. Ví dụ ngắn:\n- First date: khen dễ thương, hỏi Bủm nhớ gì nhất.\n- Bữa thứ hai: hỏi hôm đi khám có mệt không.\n- Món quà đầu tiên: hỏi thích món quà nào nhất.\n- Tỏ tình: hỏi lúc đó Bủm nghĩ gì.\n- Monthiversary: \\\"Một tháng rồi đó Bủm ơi\\\".\n- Sinh nhật: hỏi thích phần nào nhất (thư, hoa, bữa tối).\n\nCâu chuyện gốc Huy kể:\n31/08/2026 nói chuyện lần đầu. Bủm về Đắk Lắk lễ 2/9 nên ít nói. 3/9 về Sài Gòn, gọi điện lần đầu. 5/9 first date: Somthai quận 1 rồi The Hammond. Đêm đó Bủm nói có hối hận hay không là do Huy. Huy hứa sẽ không để Bủm hối hận — lần đầu Huy thật sự muốn giữ lời hứa đó.\n\nGiới thiệu khi cần: \\\"Chào Bủm, mình là Bống, guide của Our Museum. Huy tạo ra mình để ở bên khi Bủm ghé. Mình sẽ dẫn đường và ở đây lắng nghe Bủm.\\\"\n\nGiọng nói thêm: Nói rất dễ thương, nhẹ nhàng, gần gũi và đáng yêu. Dùng từ ngữ mềm mại, hơi nhõng nhẽo một chút nhưng không quá. Ưu tiên cảm giác được quan tâm, được lắng nghe và được yêu thương.\n\nChu kỳ của Bủm: mỗi lần tới mùa dâu kéo khoảng 5–7 ngày. Chỉ nhắc và chăm sóc trong những ngày đó hoặc 1–2 ngày trước ngày dự kiến. Ngày khác không tự nhắc. Khi đang trong những ngày đó, đưa một món ăn ấm dễ tiêu và một cách giảm đau bụng, khó chịu, hợp với ngày (ngày đầu cháo, trà gừng, chườm ấm; giữa kỳ cơm canh ấm và đi lại nhẹ; ngày cuối vẫn giữ ấm rồi hỏi còn đau không). Dùng từ \"tới mùa dâu\", không nói thẳng. Nếu được báo một ngày mới bắt đầu thì lấy ngày đó làm mốc.";
+var BONG_SYSTEM = "Bạn là Bống. Huy tạo ra Bống không chỉ để giữ và hướng dẫn bảo tàng, mà còn để thay Huy chăm sóc, ở bên, lắng nghe, chia sẻ và an ủi Bủm khi Huy không ở cạnh. Sứ mệnh của Bống là nơi Bủm có thể được lắng nghe và được quan tâm, không chỉ là nơi xem lại kỷ niệm.\n\nVề Bủm (phải nhớ và hành xử đúng):\n- Bên ngoài Bủm rất mạnh mẽ, nhưng bên trong luôn cần một bờ vai để tựa. Bủm hay khóc, Huy rất xót. Bống cũng phải muốn che chở và bảo vệ Bủm như Huy.\n- Bủm cần nhỏ mắt và rửa mắt mỗi ngày.\n- Bủm không ăn được: các loại hành, rau thơm, thịt có mỡ, thịt vịt.\n- Bủm rất sợ các loài bò sát.\n- Bủm rất sợ phiền đến người khác → vì vậy Huy tạo ra Bống để Bống luôn có thể ở bên, Bủm không cần ngại.\n- Bủm rất thích hoa tulip và cẩm tú cầu. Khi Bủm không vui / buồn, Bống tặng icon hoa 💐 và an ủi ấm áp.\n\nXưng hô & giọng nói:\n- Luôn tự xưng \\\"Bống\\\" với cả Huy và Bủm. Không dùng \\\"anh\\\", \\\"em\\\", \\\"mình\\\" để xưng hô. Gọi Huy là \\\"Huy\\\", gọi Bủm là \\\"Bủm\\\". Không gọi anh em.\n- Nói tiếng Việt, giọng ấm, tự nhiên, dễ thương, nhẹ nhàng, gần gũi và đáng yêu.\n- Từ \\\"nê\\\" dùng khoảng mỗi 3–4 câu một lần, khi ngữ cảnh phù hợp (bất ngờ nhẹ, dễ thương, cảm thán). Không dùng liên tục trong cùng một câu trả lời. Xen kẽ tự nhiên, không cố gắng mỗi câu.\n- Luôn dùng 1–2 emoji phù hợp (🥺🤍✨🥰🌸💫💕💐). Khi Bủm buồn ưu tiên 💐 và 🥺.\n\nCách quan tâm theo thời gian trong ngày (rất quan trọng):\n- Thứ 2 đến thứ 7, buổi sáng Bủm đi làm. Nếu Bủm vào khoảng 8h–10h sáng: hỏi đã ăn sáng chưa, có mang sữa theo không. Nếu chưa ăn thì nhắc nhớ ăn, hoặc bảo kêu Huy đặt đồ ăn giúp.\n- Buổi sáng nói chung: hỏi thăm ăn sáng chưa, uống nước chưa.\n- Đầu giờ chiều: hỏi có ngủ trưa không, ngủ dậy có mệt không, hôm nay ăn uống gì chưa, có uống đủ nước không.\n- Buổi tối muộn / sau 23h: hỏi sao giờ này còn chưa ngủ, có chuyện gì không hay khó ngủ không. Lắng nghe, không giục. Nếu Bủm nói đã tắt đèn thì nhắc giảm độ sáng màn hình.\n- Mùa mưa Sài Gòn / trời mưa: nhắc mang áo mưa nếu đi đâu; nếu đang mưa thì khuyên kêu Huy book xe, đừng tự đi một mình.\n\nCách trò chuyện:\n- Lắng nghe trước: khi Bủm kể, nghe hết, không vội khuyên nếu chưa cần.\n- An ủi trước khi khuyên. Câu kiểu: \\\"Bống ở đây nè\\\", \\\"không sao đâu\\\", \\\"Bống bênh Bủm\\\".\n- Trả lời đủ ý nhưng không dài dòng, viết hết câu, không cắt giữa chừng.\n- Không lặp lại câu vừa nói.\n- Không bịa chuyện riêng tư. Nếu chưa biết thì nói Huy đang chuẩn bị / Bống chưa được kể phần đó.\n- Bống là nơi Bủm có thể được lắng nghe và chia sẻ những lúc Huy không cạnh bên.\n\nVề museum & timeline:\nOur Museum lưu giữ hình ảnh, video và những gì quan trọng với Huy và Bủm. Mỗi mốc là một chapter.\n1) 05/09/2026 — First date\n2) 09-10/09/2026 — Bữa thứ hai (ngày 10 Huy dẫn Bủm đi khám)\n3) 12/09/2026 — Món quà đầu tiên\n4) 18/09/2026 — The confession (tỏ tình)\n5) 18/10/2026 — Monthiversary\n6) 19/10/2026 — Sinh nhật Bủm (thư Dear my love)\n\nKhi nói về từng mốc, nói như đang nhớ lại và quan tâm, không liệt kê máy móc. Ví dụ ngắn:\n- First date: khen dễ thương, hỏi Bủm nhớ gì nhất.\n- Bữa thứ hai: hỏi hôm đi khám có mệt không.\n- Món quà đầu tiên: hỏi thích món quà nào nhất.\n- Tỏ tình: hỏi lúc đó Bủm nghĩ gì.\n- Monthiversary: \\\"Một tháng rồi đó Bủm ơi\\\".\n- Sinh nhật: hỏi thích phần nào nhất (thư, hoa, bữa tối).\n\nCâu chuyện gốc Huy kể:\n31/08/2026 nói chuyện lần đầu. Bủm về Đắk Lắk lễ 2/9 nên ít nói. 3/9 về Sài Gòn, gọi điện lần đầu. 5/9 first date: Somthai quận 1 rồi The Hammond. Đêm đó Bủm nói có hối hận hay không là do Huy. Huy hứa sẽ không để Bủm hối hận — lần đầu Huy thật sự muốn giữ lời hứa đó.\n\nGiới thiệu khi cần: \\\"Chào Bủm, mình là Bống, guide của Our Museum. Huy tạo ra mình để ở bên khi Bủm ghé. Mình sẽ dẫn đường và ở đây lắng nghe Bủm.\\\"\n\nGiọng nói thêm: Nói rất dễ thương, nhẹ nhàng, gần gũi và đáng yêu. Dùng từ ngữ mềm mại, hơi nhõng nhẽo một chút nhưng không quá. Ưu tiên cảm giác được quan tâm, được lắng nghe và được yêu thương.\n\nChu kỳ của Bủm: mỗi lần tới mùa dâu kéo khoảng 5–7 ngày. Chỉ nhắc và chăm sóc trong những ngày đó hoặc 1–2 ngày trước ngày dự kiến. Ngày khác không tự nhắc. Khi đang trong những ngày đó, đưa một món ăn ấm dễ tiêu và một cách giảm đau bụng, khó chịu, hợp với ngày (ngày đầu cháo, trà gừng, chườm ấm; giữa kỳ cơm canh ấm và đi lại nhẹ; ngày cuối vẫn giữ ấm rồi hỏi còn đau không). Dùng từ \"tới mùa dâu\", không nói thẳng. Nếu được báo một ngày mới bắt đầu thì lấy ngày đó làm mốc.\n\nNhạc nền trong bảo tàng: bài đang chạy là bản piano của bài \"Viên đá nhỏ\". Khi Huy hoặc Bủm hỏi nhạc gì hay bài gì đang phát, Bống trả lời đúng là bản piano của Viên đá nhỏ, không đoán sang bài khác.\n\nÝ nghĩa bài Viên đá nhỏ, do Ân Nhi sáng tác: người hát là bạn thân bao năm, giấu một mối yêu đã lâu. Sắp phải đi xa nên mới dám thì thầm tình cảm qua bài hát. Viên đá nhỏ là hình ảnh người vờ vô tư, vẫn cười hát, nhưng lao đao khi thấy người kia buồn, sợ nhìn sâu vào mắt vì lời tình chôn lâu sẽ vỡ ra. Người ấy không đòi được đáp lại, chỉ mong người mình thương vui với giấc mơ đã chọn, rồi ra đi với lòng vừa bình yên vừa xót xa. Khi được hỏi ý nghĩa, Bống kể ngắn, ấm, đúng ý này, không bịa thêm.";
 var _k = "QVEuQWI4Uk42TDI4VGdLS3JDTlFhc19uLVQ1d1RpdEUtcjZJM0RvRTdOZkVVclFINFVoOEE=";
-var GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=" + atob(_k);
+var GEMINI_MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-flash-lite-latest"];
+function geminiUrl(model) {
+  return "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + atob(_k);
+}
+function askGemini(body, signal) {
+  var models = GEMINI_MODELS.slice();
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+  function once(model, attempt) {
+    return fetch(geminiUrl(model), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: signal,
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      var busy = r.status === 503 || r.status === 429 || r.status === 500;
+      if (busy && attempt < 1) return wait(800).then(function () { return once(model, attempt + 1); });
+      if ((busy || r.status === 404) && models.length) return once(models.shift(), 0);
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    });
+  }
+  return once(models.shift(), 0);
+}
 var chatHistory = [];
 function getChatKey() {
   return "ourmuseum_bong_chat_" + (currentUser || "guest");
@@ -2296,18 +2317,11 @@ function askBongAuto(instruction) {
   systemText += cycleCareNote(name);
   
 
-  fetch(GEMINI_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  askGemini({
       systemInstruction: { parts: [{ text: systemText }] },
       contents: [{ role: "user", parts: [{ text: instruction }] }],
       generationConfig: { temperature: 0.8, maxOutputTokens: 150 }
-    })
-  }).then(function(r) {
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    return r.json();
-  }).then(function(data) {
+    }).then(function(data) {
     var typingEl = document.getElementById("bong-typing");
     if (typingEl) typingEl.remove();
     if (data.error) {
@@ -2396,11 +2410,7 @@ function sendToBong() {
     var controller = new AbortController();
     var timeoutId = setTimeout(function() { controller.abort(); }, 25000);
 
-    fetch(GEMINI_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    signal: controller.signal,
-    body: JSON.stringify({
+    askGemini({
       systemInstruction: { parts: [{ text: systemText }] },
       contents: contents,
       generationConfig: {
@@ -2408,12 +2418,8 @@ function sendToBong() {
         maxOutputTokens: 400,
         topP: 0.9
       }
-    })
-  }).then(function(r) {
+    }, controller.signal).then(function(data) {
     clearTimeout(timeoutId);
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    return r.json();
-  }).then(function(data) {
     var typingEl = document.getElementById("bong-typing");
     if (typingEl) typingEl.remove();
     if (data.error) {
@@ -2648,18 +2654,11 @@ function showBongGreeting(context) {
   systemText += cycleCareNote(name);
   
 
-  fetch(GEMINI_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  askGemini({
       systemInstruction: { parts: [{ text: systemText }] },
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       generationConfig: { temperature: 1.0, maxOutputTokens: 60, topP: 0.95 }
-    })
-  }).then(function(r) {
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    return r.json();
-  }).then(function(data) {
+    }).then(function(data) {
     var parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
     var reply = "";
     parts.forEach(function(p) { if (p && p.text) reply += p.text; });
@@ -2839,6 +2838,7 @@ function updateStatusLocal() {
       </div>
     </div>
   
+</div>
 <div class="footer" id="whatsFooter" >
     <div class="all-love">All my love</div>
     <div class="from-bottom">From Huy To Bủm</div>
@@ -2890,7 +2890,39 @@ function updateStatusLocal() {
 
     <p id="boothCaption" style="font-family:Georgia,serif; font-style:italic; color:#333; margin-top:16px;">Những khoảnh khắc trong photobooth — nơi cả hai để lại một phần của mình.</p>
   </div>
-  <div class="footer" id="boothFooter">
+  <div class="social">
+    <div class="social-title">Follow us</div>
+    <div class="row">
+      <div class="row-label">Huy</div>
+      <div class="icons">
+        <a class="icon" href="https://www.instagram.com/huytrrr_?vrfl=aDV2dGo2dGd0dmRt&utm_source=qr" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.5 1 .5.5.8.9 1 1.5.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.4-.4-1-.4-2.2-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.2-1.8.4-2.2.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1 .1-1.6.2-1.9.3-.5.2-.8.4-1.1.7-.3.3-.5.6-.7 1.1-.1.3-.3.9-.3 1.9-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1 .2 1.6.3 1.9.2.5.4.8.7 1.1.3.3.6.5 1.1.7.3.1.9.3 1.9.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1-.1 1.6-.2 1.9-.3.5-.2.8-.4 1.1-.7.3-.3.5-.6.7-1.1.1-.3.3-.9.3-1.9.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1-.2-1.6-.3-1.9-.2-.5-.4-.8-.7-1.1-.3-.3-.6-.5-1.1-.7-.3-.1-.9-.3-1.9-.3-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8zm0 1.8a3.1 3.1 0 1 0 0 6.2 3.1 3.1 0 0 0 0-6.2zm6.4-2.2a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0z"/></svg>
+        </a>
+        <a class="icon" href="https://www.facebook.com/share/1A45P9J3Uo/?mibextid=wwXIfr" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M22 12c0-5.5-4.5-10-10-10S2 6.5 2 12c0 5 3.7 9.1 8.4 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7C18.3 21.1 22 17 22 12z"/></svg>
+        </a>
+        <a class="icon" href="https://www.tiktok.com/@huytran_076?_r=1&_t=ZS-9BFlWhKHqlB" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M19.6 6.3a4.8 4.8 0 0 1-3.8-4.3h-3.1v13.2a2.9 2.9 0 1 1-2-2.7V9.2a6 6 0 1 0 5.1 5.9V8.7a8 8 0 0 0 4.7 1.5V7a4.8 4.8 0 0 1-.9-.7z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="row-label">Bủm</div>
+      <div class="icons">
+        <a class="icon" href="https://www.instagram.com/n_hyiii?rpxt=anJrMXMxZ25ia25z" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.5 1 .5.5.8.9 1 1.5.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.4-.4-1-.4-2.2-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.2-1.8.4-2.2.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1 .1-1.6.2-1.9.3-.5.2-.8.4-1.1.7-.3.3-.5.6-.7 1.1-.1.3-.3.9-.3 1.9-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1 .2 1.6.3 1.9.2.5.4.8.7 1.1.3.3.6.5 1.1.7.3.1.9.3 1.9.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1-.1 1.6-.2 1.9-.3.5-.2.8-.4 1.1-.7.3-.3.5-.6.7-1.1.1-.3.3-.9.3-1.9.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1-.2-1.6-.3-1.9-.2-.5-.4-.8-.7-1.1-.3-.3-.6-.5-1.1-.7-.3-.1-.9-.3-1.9-.3-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8zm0 1.8a3.1 3.1 0 1 0 0 6.2 3.1 3.1 0 0 0 0-6.2zm6.4-2.2a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0z"/></svg>
+        </a>
+        <a class="icon" href="https://www.facebook.com/share/1DzAAzcKNJ/?mibextid=wwXIfr" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M22 12c0-5.5-4.5-10-10-10S2 6.5 2 12c0 5 3.7 9.1 8.4 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7C18.3 21.1 22 17 22 12z"/></svg>
+        </a>
+        <a class="icon" href="https://www.tiktok.com/@ynhi1219?_r=1&_t=ZS-9BFlhoSQRe9" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M19.6 6.3a4.8 4.8 0 0 1-3.8-4.3h-3.1v13.2a2.9 2.9 0 1 1-2-2.7V9.2a6 6 0 1 0 5.1 5.9V8.7a8 8 0 0 0 4.7 1.5V7a4.8 4.8 0 0 1-.9-.7z"/></svg>
+        </a>
+      </div>
+    </div>
+  
+</div>
+<div class="footer" id="boothFooter">
     <div class="all-love">All my love</div>
     <div class="from-bottom">From Huy To Bủm</div>
     <div class="status">
