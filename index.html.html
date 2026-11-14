@@ -1562,16 +1562,33 @@
     letter-spacing: 0.04em;
     color: rgba(255,255,255,0.82);
   }
-  .booth-rail {
-    display: none;
-    position: absolute;
-    right: 14px;
-    bottom: 64px;
-    z-index: 2;
-    width: 176px;
-    margin: 0;
+  #boothHeroCopy {
+    bottom: 18px;
+    width: 62%;
   }
-  .exhibit-poster.is-slider .booth-rail { display: flex; }
+  #boothRail {
+    display: flex;
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    margin: 14px 0 0;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    z-index: 2;
+  }
+  .booth-rail-line {
+    flex: 1;
+    margin: 0;
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: #1a1a1a;
+  }
   .booth-cards {
     display: flex;
     gap: 8px;
@@ -1638,18 +1655,8 @@
     text-align: left;
     text-shadow: 0 1px 4px rgba(0,0,0,0.8);
   }
-  .booth-arrows { display: none; }
-  .exhibit-poster.is-slider .booth-arrows {
-    position: absolute;
-    left: 50%;
-    bottom: 16px;
-    top: auto;
-    transform: translateX(-50%);
-    z-index: 3;
-    display: flex;
-    gap: 8px;
-    pointer-events: none;
-  }
+  .booth-arrows,
+  .exhibit-poster.is-slider .booth-arrows { display: none; }
   .booth-arrows button {
     width: 36px;
     height: 36px;
@@ -3867,13 +3874,10 @@ function updateStatusLocal() {
         <h2>A SPACE WHERE<br>I LEAVE MYSELF</h2>
         <div class="when">Since 20 September 2026</div>
       </div>
-      <div class="booth-rail" id="boothRail">
-        <div class="booth-cards" id="boothCards"></div>
-      </div>
-      <div class="booth-arrows">
-        <button type="button" onclick="renderBoothSlide(boothSlideIndex - 1)" aria-label="Trước">‹</button>
-        <button type="button" onclick="renderBoothSlide(boothSlideIndex + 1)" aria-label="Sau">›</button>
-      </div>
+    </div>
+    <div class="booth-rail" id="boothRail">
+      <p class="booth-rail-line">A space where I leave myself</p>
+      <div class="booth-cards" id="boothCards"></div>
     </div>
     <h2 class="booth-before">Before The Frame</h2>
 <section class="before-frame" id="beforeFrame">
