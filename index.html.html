@@ -568,6 +568,11 @@
     letter-spacing: 0.1em;
     font-weight: 400;
     color: #fff;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: "Cormorant Garamond", Georgia, serif;
   }
   .footer {
     background: #0a0a0a;
@@ -1361,12 +1366,67 @@
   #datePage,
   #storyPage,
   #timelinePage,
-  #notesPage {
+  #notesPage,
+  #secretPage {
     opacity: 0;
     transform: scale(1.02);
     transition: opacity 0.5s ease, transform 0.5s ease;
   }
 
+  .letter {
+    position: relative;
+    margin: 28px 16px 40px;
+    padding: 52px 30px 42px;
+    background: #fbf7f1;
+    border: 1px solid #efe6da;
+    box-shadow: 0 18px 40px rgba(40, 30, 20, 0.06);
+  }
+  .letter-corner {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    pointer-events: none;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><path d='M3 16 V5 H14' fill='none' stroke='%23b7a594' stroke-width='1'/><path d='M7 13 C12 6 18 5 22 8' fill='none' stroke='%23c4a3a8' stroke-width='0.9'/><circle cx='8.5' cy='8.5' r='1.15' fill='%23c4a3a8'/></svg>") center / contain no-repeat;
+  }
+  .letter-corner.tl { top: 10px; left: 10px; }
+  .letter-corner.tr { top: 10px; right: 10px; transform: scaleX(-1); }
+  .letter-corner.bl { bottom: 10px; left: 10px; transform: scaleY(-1); }
+  .letter-corner.br { bottom: 10px; right: 10px; transform: scale(-1); }
+  .letter .letter-from {
+    margin: 0;
+    text-align: right;
+    font-family: Inter, sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #8a8178;
+  }
+  .letter .letter-dear {
+    margin: 28px 0 18px;
+    text-align: left;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.45rem;
+    line-height: 1.15;
+    color: #1c1c1c;
+  }
+  .letter p {
+    margin: 0 0 16px;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.18rem;
+    line-height: 1.45;
+    color: #2a2623;
+  }
+  .letter .letter-sign {
+    margin: 26px 0 0;
+    text-align: right;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-style: italic;
+    font-size: 1.28rem;
+    line-height: 1.2;
+    color: #1c1c1c;
+  }
   .whats-top {
     background: #000;
     padding: 20px;
@@ -2283,7 +2343,7 @@
 
 <div class="page" id="mainPage" style="display:none;">
   <div class="header">
-    <div class="logo">Our Museum</div>
+    <button type="button" class="logo" onclick="openSecret()">Our Museum</button>
   </div>
 
   <div class="hero">
@@ -3238,6 +3298,13 @@ function updateOtherStatus(data) {
     document.getElementById("notesStatusBum"),
     data
   );
+  paintMuseumStatus(
+    document.getElementById("secretDotHuy"),
+    document.getElementById("secretStatusHuy"),
+    document.getElementById("secretDotBum"),
+    document.getElementById("secretStatusBum"),
+    data
+  );
 }
 function paintMuseumStatus(dotH, txtH, dotB, txtB, data) {
   data = data || {};
@@ -3339,6 +3406,12 @@ function updateStatus(data) {
 //   });
 // }
 
+function openSecret() {
+  showLayer(document.getElementById("secretPage"));
+}
+function backFromSecret() {
+  hideLayer(document.getElementById("secretPage"));
+}
 function goHome() {
   if (typeof stopBoothAuto === "function") stopBoothAuto();
   var pages = document.querySelectorAll(".sub-page");
@@ -4533,6 +4606,39 @@ function updateStatusLocal() {
       <span id="notesStatusHuy">Huy</span>
       <span class="dot" id="notesDotBum"></span>
       <span id="notesStatusBum">Bủm</span>
+    </div>
+    <div class="whats-copyright">Exhibited for Nguyễn Thị Yến Nhi<br>&copy; 2026 OUR PRIVATE MUSEUM. ALL RIGHTS RESERVED. CURATED BY HUY.</div>
+  </div>
+</div>
+<div class="sub-page" id="secretPage" style="display:none; position:fixed !important; top:0 !important; left:0 !important; width:100% !important; height:100% !important; z-index:999999 !important; background:#fff !important; overflow-y:auto;">
+  <div class="whats-top"><button type="button" class="whats-logo" onclick="goHome()">Our Museum</button></div>
+  <div class="whats-bar">
+    <button class="whats-back" onclick="backFromSecret()">‹</button>
+    <span class="whats-crumb">A letter</span>
+  </div>
+  <div style="background:#fff; flex:1;">
+    <article class="letter">
+      <span class="letter-corner tl"></span>
+      <span class="letter-corner tr"></span>
+      <span class="letter-corner bl"></span>
+      <span class="letter-corner br"></span>
+      <p class="letter-from">From Huy</p>
+      <p class="letter-dear">Dear Bủm,</p>
+      <p>Chúc mừng Bủm đã tìm ra được trang ẩn mà anh giấu nha. Anh biết là Bủm hong có thích đọc nhiều chữ, nhưng mà nếu Bủm đã tìm ra được lá thư anh ẩn đi rồi thì anh mong Bủm sẽ đọc hết nó cho anh vui nha.</p>
+      <p>Anh biết là ở hiện tại anh có lúc làm Bủm hong có vui, cũng có lúc chúng ta chưa hiểu hết nhau trong cuộc sống nhưng anh rất vui vì anh đã được đồng hành cùng Bủm và có Bủm đi cùng trong hành trình của anh. Anh rất vui vì sự xuất hiện của Bủm, Bủm cho anh xin lỗi vì đã nhiều lúc làm Bủm buồn lòng nha, thật ra tất cả những gì anh muốn chỉ là làm cho Bủm hạnh phúc, bù đắp lại những tổn thương mà Bủm đã phải một mình gánh chịu suốt bao lâu qua thôi, anh mong mình sẽ đủ sức và đủ may mắn để được cùng Bủm đồng hành trên suốt chặng đường còn lại và có thể làm được những lời hứa anh dành cho Bủm. Đến ngày hôm này và cho đến sau này anh sẽ luôn nhớ lời hứa không để Bủm cảm thấy hồi hận khi đã chọn bên anh, anh mong Bủm sẽ cảm thấy hạnh phúc khi bên cạnh anh, anh mong từ giờ sau này dù cho có lúc giận hờn, có lúc chúng ta sẽ cãi vả hay dù cho trong cuộc sống chúng ta có nhiều khó khăn thì chúng ta vẫn chọn sẽ nhớ về nhau những lúc chúng ta hạnh phúc, nhớ về những lúc đầu chúng ta chọn nhau và sẽ nhớ về những lời hứa mà ngày hôm đó chúng ta dành cho nhau.</p>
+      <p>Anh thương Bủm lắm, anh mong dù trong hoàn cảnh như thế nào thì chúng ta vẫn chọn ở lại vì nhau. Thương Bủm.</p>
+      <p class="letter-sign">Huy</p>
+    </article>
+  </div>
+  <div data-social-slot></div>
+  <div class="footer" id="secretFooter">
+    <div class="all-love">All my love</div>
+    <div class="from-bottom">From Huy To Bủm</div>
+    <div class="status">
+      <span class="dot" id="secretDotHuy"></span>
+      <span id="secretStatusHuy">Huy</span>
+      <span class="dot" id="secretDotBum"></span>
+      <span id="secretStatusBum">Bủm</span>
     </div>
     <div class="whats-copyright">Exhibited for Nguyễn Thị Yến Nhi<br>&copy; 2026 OUR PRIVATE MUSEUM. ALL RIGHTS RESERVED. CURATED BY HUY.</div>
   </div>
