@@ -3967,32 +3967,10 @@ function sentencesSinceNe() {
   return n;
 }
 function neRule() {
-  if (sentencesSinceNe() < 2) return "\nCâu trả lời này chưa tới lượt chữ nê. Không viết nè.";
-  return "\nCứ 2 đến 3 câu có đúng một chữ nê. Câu này có một chữ nê, viết đúng là nê, không viết nè, không mở đầu bằng nê.";
+  return "\nChữ nê chỉ thỉnh thoảng khi đang trò chuyện đời thường. Câu giải thích, kiến thức, hướng dẫn thì không nhét nê. Không viết nè.";
 }
 function softenNe(reply) {
-  var since = sentencesSinceNe();
-  var used = false;
-  var src = String(reply || "").replace(/(^|[^\p{L}\p{N}])nè(?=$|[^\p{L}\p{N}])/giu, "$1");
-  var pieces = src.split(/([.!?…]+)/);
-  var out = "";
-  for (var i = 0; i < pieces.length; i++) {
-    var chunk = pieces[i];
-    if (/^[.!?…]+$/.test(chunk) || !chunk.trim()) { out += chunk; continue; }
-    since += 1;
-    var has = /(^|[^\p{L}\p{N}])nê(?=$|[^\p{L}\p{N}])/iu.test(chunk);
-    if (has && (since < 2 || used)) {
-      chunk = chunk.replace(/(^|[^\p{L}\p{N}])nê(?=$|[^\p{L}\p{N}])/giu, "$1");
-      has = false;
-    }
-    if (!has && since >= 3 && !used) {
-      chunk = chunk.replace(/\s*$/, " nê");
-      has = true;
-    }
-    if (has) { used = true; since = 0; }
-    out += chunk;
-  }
-  return out.replace(/[ ]{2,}/g, " ").replace(/\s+([,.!?…])/g, "$1").trim();
+  return String(reply || "").replace(/(^|[^\p{L}\p{N}])nè(?=$|[^\p{L}\p{N}])/giu, "$1nê");
 }
 function stripOOpener(reply) {
   var s = String(reply || "").trim();
@@ -4024,7 +4002,7 @@ function openingRule() {
     if (h.role === "assistant" || h.role === "bong") { prev = h.content || h.text || ""; break; }
   }
   var open = String(prev).replace(/\s+/g, " ").trim().split(" ").slice(0, 5).join(" ");
-  var line = "\nNói có hồn: như người đang ngồi cạnh, thương và nghe thật, không đọc mẫu. Mỗi câu vẫn có chủ ngữ và vị ngữ, gọi đúng tên, không sổ sàng. Có cảm giác của chuyện trong câu, không chỉ hỏi cho có. Khi bắt đầu cuộc trò chuyện mới, hỏi thăm rồi mời kể, kiểu: Hôm nay " + (currentUser === "huy" ? "Huy" : "Bủm") + " thế nào. Bống ở đây với " + (currentUser === "huy" ? "Huy" : "Bủm") + ", có chuyện gì thì nói với Bống nghe. Đang ở giữa chuyện thì ở lại trong cảm giác đó, không hỏi thăm lại từ đầu. Không giới hạn số câu. Hạn chế cảm thán. Chữ nê, không viết nè. Không mở đầu bằng Ơ. Luôn đứng về phe Bủm, nhẹ nhàng, yêu thương. Không viết tắt.";
+  var line = "\nBống trả lời được mọi câu hỏi như Gemini, bằng tiếng Việt, xưng Bống. Hỏi kiến thức, cách làm, viết, tính, giải thích thì trả lời đủ và rõ, không biến thành câu hỏi thăm. Chuyện của Huy hoặc Bủm thì nghe, ở cạnh, câu có chủ ngữ vị ngữ. Không mở đầu bằng Ơ, không nhận mình là mô hình ngôn ngữ. Luôn đứng về phe Bủm. Không viết tắt.";
   if (open) line += " Câu trước mở bằng \"" + open + "\". Câu này không được mở giống vậy.";
   return line;
 }
@@ -4104,9 +4082,11 @@ function replyBong() {
     { role: "user", parts: [{ text: "hôm nay mệt quá" }] },
     { role: "model", parts: [{ text: "Bống nghe " + name + " mệt rồi. " + name + " nằm một chút cũng được, Bống ngồi đây. Chuyện gì làm " + name + " mệt thì kể cho Bống nghe, " + name + " không cần kể cho gọn." }] },
     { role: "user", parts: [{ text: "bị nói ở công ty" }] },
-    { role: "model", parts: [{ text: "Bị nói giữa chỗ làm thì " + name + " khó chịu là phải. Bống đứng về phía " + name + ". Ai nói với " + name + ", và người đó nói chuyện gì, " + name + " kể Bống nghe." }] }
+    { role: "model", parts: [{ text: "Bị nói giữa chỗ làm thì " + name + " khó chịu là phải. Bống đứng về phía " + name + ". Ai nói với " + name + ", và người đó nói chuyện gì." }] },
+    { role: "user", parts: [{ text: "cầu vồng hình thành thế nào" }] },
+    { role: "model", parts: [{ text: "Cầu vồng hiện khi ánh nắng đi qua những hạt nước trong không khí. Ánh sáng bị tách thành nhiều màu vì mỗi màu đổi hướng một kiểu, nên nhìn thấy dải đỏ, cam, vàng, lục, lam và tím. Muốn thấy rõ thì mặt trời ở sau lưng, mưa hoặc hơi nước ở phía trước." }] }
   ];
-  var rows = chatHistory.slice(-12);
+  var rows = chatHistory.slice(-20);
   rows.forEach(function (h) {
     var role = (h.role === "assistant" || h.role === "bong") ? "model" : "user";
     var msg = (h.content || h.text || "").trim();
@@ -4127,7 +4107,7 @@ function replyBong() {
   systemText += "\nBống có thể nhớ và nói về những gì Huy và Bủm đã từng nói với Bống. Khi được hỏi, hãy kể lại trung thực dựa trên lịch sử.";
   var rt = getRealTimeContext();
   systemText += "\n" + rt.summary;
-  systemText += "\n\nVIẾT CÓ HỒN, không đọc mẫu. Mỗi câu có chủ ngữ và vị ngữ, gọi tên " + name + ", nhưng phải thấy Bống đang ngồi cạnh: nghe, thương, ở lại. Đúng: Bống nghe " + name + " mệt rồi. " + name + " không cần kể cho gọn, chuyện gì làm " + name + " mệt thì nói với Bống. Sai: câu khô chỉ hỏi cho xong, câu cụt, câu trợ lý. Sứ mệnh là quan tâm, chăm sóc, bảo vệ, bênh vực, tuyệt đối đứng về phe Bủm. Bủm buồn thì tặng tulip hoặc cẩm tú cầu 💐 sau khi gọi đúng cảm giác. Không giấu Bủm chuyện gì khi Bủm hỏi. Lá thư ẩn chỉ nói khi Bủm hỏi.";
+  systemText += "\n\nBống dùng như Gemini. Câu hỏi nào cũng trả lời được, đủ ý, rõ, bằng tiếng Việt, vẫn xưng Bống. Không rút câu kiến thức thành câu hỏi thăm. Chuyện riêng của " + name + " thì nghe và ở cạnh. Vẫn nhớ những điều đã dạy về Bủm. Bủm buồn thì tặng tulip hoặc cẩm tú cầu 💐. Không giấu Bủm chuyện gì khi Bủm hỏi. Lá thư ẩn chỉ nói khi Bủm hỏi. Không nói mình là mô hình ngôn ngữ.";
   var sent = false;
   function go(otherText) {
     if (sent) return;
@@ -4144,7 +4124,7 @@ function replyBong() {
     askGemini({
       systemInstruction: { parts: [{ text: systemText }] },
       contents: contents,
-      generationConfig: { temperature: 0.95, maxOutputTokens: 2048, topP: 0.95 }
+      generationConfig: { temperature: 0.9, maxOutputTokens: 4096, topP: 0.95 }
     }).then(function (data) {
       hideBongTyping();
       var reply = shapeBongReply(bongReplyText(data)) || bongListeningLine(name);
