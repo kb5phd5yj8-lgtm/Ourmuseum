@@ -396,16 +396,29 @@
   .pw-tab {
     flex: 1;
     text-align: center;
-    padding: 10px 0;
+    padding: 10px 4px 8px;
     font-family: "Cormorant Garamond", Georgia, serif;
-    font-size: 1.45rem;
-    letter-spacing: 0.08em;
+    font-size: 1.15rem;
+    letter-spacing: 0.02em;
     color: #888;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.6s ease, border-color 0.6s ease;
   }
   .pw-tab.on {
     color: #111;
     border-bottom: 2px solid #111;
     font-weight: 500;
+  }
+  @keyframes pwInRight {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pwInLeft {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   .pw-section {
     font-family: "Inter", sans-serif;
@@ -606,6 +619,22 @@
     color: #ccc;
     margin-top: 12px;
     text-align: left;
+  }
+  .bum-pass {
+    display: none;
+    margin-top: 10px;
+    font-family: -apple-system, sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: #8a8a8a;
+    text-align: left;
+    opacity: 0;
+    transition: opacity 0.55s ease;
+  }
+  .bum-pass b {
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: #bdbdbd;
   }
 
   .dot {
@@ -2811,21 +2840,35 @@
   <div class="pw-body">
     <div class="pw-title">MY ACCOUNT</div>
     <div class="pw-tabs">
-      <div class="pw-tab on">Log In</div>
+      <button type="button" class="pw-tab on" id="tabLogin" onclick="showPwTab('login')">Log In</button>
+      <button type="button" class="pw-tab" id="tabCreate" onclick="showPwTab('create')">Create an account</button>
     </div>
-    <div class="pw-section">Enter your user ID</div>
-    <div class="pw-label">Email address</div>
-    <input class="pw-field" id="pwEmail" type="email" list="emailList" placeholder="Email address" autocomplete="off">
-    <datalist id="emailList">
-      <option value="nhiy6846@gmail.com">
-      <option value="Tranphamduchuy088@gmail.com">
-    </datalist>
-    <div class="pw-label">Password</div>
-    <input class="pw-field" id="pwPass" type="password" placeholder="Password">
-    <div class="pw-forgot" onclick="showForgot()">Forgot your password?</div>
-    <div class="pw-ask" id="pwAsk" style="display:none;">Ask your husband</div>
-    <button type="button" class="pw-login" onclick="doLogin()">Log In</button>
-    <div class="pw-hint" id="pwHint"></div>
+    <div id="pwLoginPanel">
+      <div class="pw-section">Enter your user ID</div>
+      <div class="pw-label">Email address</div>
+      <input class="pw-field" id="pwEmail" type="email" list="emailList" placeholder="Email address" autocomplete="off">
+      <datalist id="emailList">
+        <option value="nhiy6846@gmail.com">
+        <option value="Tranphamduchuy088@gmail.com">
+      </datalist>
+      <div class="pw-label">Password</div>
+      <input class="pw-field" id="pwPass" type="password" placeholder="Password">
+      <div class="pw-forgot" onclick="showForgot()">Forgot your password?</div>
+      <div class="pw-ask" id="pwAsk" style="display:none;">Ask your husband</div>
+      <button type="button" class="pw-login" onclick="doLogin()">Log In</button>
+      <div class="pw-hint" id="pwHint"></div>
+    </div>
+    <div id="pwCreatePanel" style="display:none;">
+      <div class="pw-section">Enter your user ID</div>
+      <div class="pw-label">Email address</div>
+      <input class="pw-field" id="crEmail" type="email" list="emailList" placeholder="Email address" autocomplete="off">
+      <div class="pw-label">Password</div>
+      <input class="pw-field" id="crPass" type="password" placeholder="Password">
+      <div class="pw-label">Confirm password</div>
+      <input class="pw-field" id="crPass2" type="password" placeholder="Confirm password">
+      <button type="button" class="pw-login" onclick="doCreate()">Create</button>
+      <div class="pw-hint" id="crHint"></div>
+    </div>
   </div>
 </div>
 
@@ -2982,13 +3025,14 @@
 
   <div class="footer" id="mainFooter" style="display:none;">
     <div class="all-love">All my love</div>
-    <div class="from-bottom">From Huy To Bủm</div>
+    <div class="from-bottom" id="fromLine" onclick="tapForBumPass()">From Huy To Bủm</div>
     <div class="status">
       <span class="dot" id="dotHuy"></span>
       <span id="statusHuy">Huy</span>
       <span class="dot" id="dotBum"></span>
       <span id="statusBum">Bủm</span>
     </div>
+    <div class="bum-pass" id="bumPassNote"></div>
     <div class="whats-copyright">Exhibited for Nguyễn Thị Yến Nhi<br>&copy; 2026 OUR PRIVATE MUSEUM. ALL RIGHTS RESERVED. CURATED BY HUY.</div>
   </div>
 
@@ -3918,6 +3962,171 @@ function setupPassword() {
   if (e) e.value = "";
   if (p) p.value = "";
   if (h) h.textContent = "";
+  var ce = document.getElementById("crEmail");
+  var cp = document.getElementById("crPass");
+  var cp2 = document.getElementById("crPass2");
+  var ch = document.getElementById("crHint");
+  if (ce) ce.value = "";
+  if (cp) cp.value = "";
+  if (cp2) cp2.value = "";
+  if (ch) ch.textContent = "";
+  showPwTab("login", true);
+  loadAccountPasses();
+}
+
+function showPwTab(which, instant) {
+  var login = document.getElementById("pwLoginPanel");
+  var create = document.getElementById("pwCreatePanel");
+  var tabLogin = document.getElementById("tabLogin");
+  var tabCreate = document.getElementById("tabCreate");
+  var isCreate = which === "create";
+  if (login) login.style.display = isCreate ? "none" : "block";
+  if (create) create.style.display = isCreate ? "block" : "none";
+  if (tabLogin) tabLogin.className = isCreate ? "pw-tab" : "pw-tab on";
+  if (tabCreate) tabCreate.className = isCreate ? "pw-tab on" : "pw-tab";
+  var panel = isCreate ? create : login;
+  if (!panel || instant) return;
+  panel.style.animation = "none";
+  void panel.offsetWidth;
+  panel.style.animation = (isCreate ? "pwInRight" : "pwInLeft") + " 0.85s cubic-bezier(0.16, 1, 0.3, 1)";
+}
+
+var ACCOUNT_MAIL = {
+  "nhiy6846@gmail.com": "bum",
+  "tranphamduchuy088@gmail.com": "huy"
+};
+var DEFAULT_PASS = "huyvabum";
+var accountPasses = { bum: DEFAULT_PASS, huy: DEFAULT_PASS };
+var passesReady = false;
+var passLoadGen = 0;
+
+function rememberPasses() {
+  passLoadGen++;
+  try { localStorage.setItem("museum_passes", JSON.stringify(accountPasses)); } catch (e) {}
+}
+
+function loadAccountPasses() {
+  var gen = ++passLoadGen;
+  try {
+    var saved = JSON.parse(localStorage.getItem("museum_passes") || "{}");
+    if (saved.bum) accountPasses.bum = saved.bum;
+    if (saved.huy) accountPasses.huy = saved.huy;
+  } catch (e) {}
+  if (!window.db) { passesReady = true; watchBumPass(); return Promise.resolve(); }
+  return window.db.ref("accounts").once("value").then(function (snap) {
+    if (gen !== passLoadGen) return;
+    var val = snap.val() || {};
+    if (val.bum && val.bum.pass) accountPasses.bum = val.bum.pass;
+    if (val.huy && val.huy.pass) accountPasses.huy = val.huy.pass;
+    try { localStorage.setItem("museum_passes", JSON.stringify(accountPasses)); } catch (e) {}
+    passesReady = true;
+    watchBumPass();
+  }).catch(function () {
+    passesReady = true;
+    watchBumPass();
+  });
+}
+
+function watchBumPass() {
+  if (!window.db || window._bumPassWatch) return;
+  window._bumPassWatch = true;
+  window.db.ref("accounts/bum").on("value", function (snap) {
+    var val = snap.val();
+    if (!val || !val.pass) return;
+    accountPasses.bum = val.pass;
+    try {
+      localStorage.setItem("museum_passes", JSON.stringify(accountPasses));
+    } catch (e) {}
+    paintBumPass(false);
+  });
+}
+
+var bumPassTaps = [];
+var bumPassTimer = null;
+
+function tapForBumPass() {
+  if (currentUser !== "huy") return;
+  var now = Date.now();
+  bumPassTaps.push(now);
+  bumPassTaps = bumPassTaps.filter(function (t) { return now - t < 900; });
+  if (bumPassTaps.length < 3) return;
+  bumPassTaps = [];
+  paintBumPass(true);
+}
+
+function paintBumPass(reveal) {
+  var el = document.getElementById("bumPassNote");
+  if (!el || !reveal || currentUser !== "huy") return;
+  var pass = accountPasses.bum;
+  el.textContent = "";
+  if (!pass || pass === DEFAULT_PASS) {
+    el.appendChild(document.createTextNode("Bủm chưa đổi"));
+  } else {
+    var strong = document.createElement("b");
+    strong.textContent = pass;
+    el.appendChild(strong);
+  }
+  el.style.display = "block";
+  el.style.opacity = "0";
+  requestAnimationFrame(function () { el.style.opacity = "1"; });
+  if (bumPassTimer) clearTimeout(bumPassTimer);
+  bumPassTimer = setTimeout(function () {
+    el.style.opacity = "0";
+    setTimeout(function () {
+      el.style.display = "none";
+      el.textContent = "";
+    }, 560);
+  }, 3200);
+}
+
+function enterAs(who) {
+  currentUser = who;
+  var hint = document.getElementById("pwHint");
+  if (hint) hint.textContent = "";
+  setPresence(true);
+  updateOtherStatus({});
+  setTimeout(showMain, 100);
+}
+
+function doLogin() {
+  var email = (document.getElementById("pwEmail").value || "").trim().toLowerCase();
+  var pass = (document.getElementById("pwPass").value || "").trim();
+  var who = ACCOUNT_MAIL[email];
+  var go = function () {
+    if (who && pass && pass === accountPasses[who]) enterAs(who);
+    else document.getElementById("pwHint").textContent = "Invalid email address.";
+  };
+  if (passesReady) go();
+  else loadAccountPasses().then(go);
+}
+
+function doCreate() {
+  var email = (document.getElementById("crEmail").value || "").trim().toLowerCase();
+  var pass = (document.getElementById("crPass").value || "").trim();
+  var pass2 = (document.getElementById("crPass2").value || "").trim();
+  var who = ACCOUNT_MAIL[email];
+  var hint = document.getElementById("crHint");
+  if (!who) {
+    hint.textContent = "Invalid email address.";
+    return;
+  }
+  if (!pass) {
+    hint.textContent = "Enter a password.";
+    return;
+  }
+  if (pass !== pass2) {
+    hint.textContent = "Passwords do not match.";
+    return;
+  }
+  var save = function () {
+    accountPasses[who] = pass;
+    rememberPasses();
+    var done = function () { enterAs(who); };
+    if (!window.db) { done(); return; }
+    window.db.ref("accounts/" + who).set({ pass: pass, email: email }).then(done).catch(done);
+  };
+  if (passesReady) save();
+  else loadAccountPasses().then(save);
 }
 
 function showForgot() {
@@ -4064,32 +4273,8 @@ document.addEventListener("visibilitychange", function () {
 
 
 
-function doLogin() {
-  var email = (document.getElementById("pwEmail").value || "").trim().toLowerCase();
-  var pass = (document.getElementById("pwPass").value || "").trim();
-  if (pass === "huyvabum" && (email.indexOf("nhiy") !== -1 || email.indexOf("huy") !== -1 || email.indexOf("tran") !== -1 || email.indexOf("@") !== -1)) {
-    currentUser = email.indexOf("nhiy") !== -1 ? "bum" : "huy";
-    document.getElementById("pwHint").textContent = "";
-    setPresence(true); updateOtherStatus({}); setTimeout(showMain, 100);
-  } else {
-    document.getElementById("pwHint").textContent = "Invalid email address.";
-  }
-}
 window.checkLogin = function checkLogin() {
-  var email = (document.getElementById("pwEmail").value || "").trim().toLowerCase();
-  var pass = (document.getElementById("pwPass").value || "").trim();
-  console.log("login attempt", email, pass);
-  if ((email === "nhiy6846@gmail.com" || email.indexOf("nhiy") !== -1) && pass === "huyvabum") {
-    currentUser = "bum";
-    document.getElementById("pwHint").textContent = "";
-    setPresence(true); updateOtherStatus({}); setTimeout(showMain, 200);
-  } else if ((email === "tranphamduchuy088@gmail.com" || email.indexOf("huy") !== -1 || email.indexOf("tran") !== -1) && pass === "huyvabum") {
-    currentUser = "huy";
-    document.getElementById("pwHint").textContent = "";
-    setPresence(true); updateOtherStatus({}); setTimeout(showMain, 200);
-  } else {
-    document.getElementById("pwHint").textContent = "Invalid email address.";
-  }
+  doLogin();
 }
 
 function updateStatus(data) {
